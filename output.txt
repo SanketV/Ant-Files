@@ -1,0 +1,19 @@
+Apache Ant(TM) version 1.10.1 compiled on February 2 2017
+Trying the default build file: build.xml
+Buildfile: C:\Eclipse_Workspaces\Ant-SupportDEV\build.xml
+Detected Java version: 1.8 in: C:\Program Files\Java\jdk1.8.0_121\jre
+Detected OS: Windows 7
+parsing buildfile C:\Eclipse_Workspaces\Ant-SupportDEV\build.xml with URI = file:/C:/Eclipse_Workspaces/Ant-SupportDEV/build.xml
+Project base dir set to: C:\Eclipse_Workspaces\Ant-SupportDEV
+parsing buildfile jar:file:/C:/Software/apache-ant-1.10.1/lib/ant.jar!/org/apache/tools/ant/antlib.xml with URI = jar:file:/C:/Software/apache-ant-1.10.1/lib/ant.jar!/org/apache/tools/ant/antlib.xml from a zip file
+ [property] Loading C:\Eclipse_Workspaces\Ant-SupportDEV\build.properties
+ [property] Loading Environment env.
+parsing buildfile jar:file:/C:/Eclipse_Workspaces/ant-salesforce.jar!/com/salesforce/antlib.xml with URI = jar:file:/C:/Eclipse_Workspaces/ant-salesforce.jar!/com/salesforce/antlib.xml from a zip file
+ [macrodef] creating macro  git-clone-fetch
+Build sequence for target(s) `FetchSupportDEV' is [FetchSupportDEV]
+Complete build sequence is [FetchSupportDEV, checkoutFromGit, ]
+
+FetchSupportDEV:
+    [mkdir] Skipping C:\Eclipse_Workspaces\Ant-SupportDEV\SourceCode\SupportDEV SupportDEVGit because it already exists.
+[antlib:com.salesforce] Could not load definitions from resource com/salesforce/antlib.xml. It could not be found.
+[sf:retrieve] Note: use ant -verbose to get more information on the failure

@@ -1,0 +1,150 @@
+<project name="Fetch All for GIT Maintenance" default="FetchMay23rdDev" basedir="." xmlns:sf="antlib:com.salesforce">
+
+  <property file="build.properties"/>
+  <property environment="env"/>
+
+	  <taskdef resource="com/salesforce/antlib.xml" uri="antlib:com.salesforce">
+	        <classpath>
+	            <pathelement location="../ant-salesforce.jar" />
+	        </classpath>
+	    </taskdef>
+
+<!--================ Sources ================-->
+
+<!-- Fetch starts here -->
+	
+  <target name="• • Fetch all from May23rdDev • •" depends="FetchMay23rdDev-Part1, FetchMay23rdDev-Part2" />
+		  <target name="FetchMay23rdDev-Part1">  	
+		    <sf:retrieve 
+				 username="${dev.username}"
+				 password="${dev.password}"
+				 serverurl="${dev.serverurl}"
+				 pollWaitMillis="10000"
+				 maxPoll="5000"
+				 unpackaged="PackageXMLs/package-${version}-1.xml"
+				 retrieveTarget="${retrieveTarget}" />
+		  </target>
+		 
+		 <target name="FetchMay23rdDev-Part2">  	
+		    <sf:retrieve 
+				 username="${dev.username}"
+				 password="${dev.password}"
+				 serverurl="${dev.serverurl}"
+				 pollWaitMillis="10000"
+				 maxPoll="5000"
+				 unpackaged="PackageXMLs/package-${version}-2.xml"
+				 retrieveTarget="${retrieveTarget}" />
+		  </target>
+
+<!-- Fetch ends here -->	
+	<macrodef name = "git-clone-fetch">
+	    <attribute name = "repository" default="https://bitbucketglobal.experian.local/scm/gcs/supportdev.git" />
+	    <attribute name = "dest" default = "C:\GitBitBucket\zzDEV_GitPull" />
+	    <sequential>
+	        <git command = "clone">
+	            <args>
+	                <arg value = "@{repository}" />
+	                <arg value = "@{dest}" />
+	            	<arg value ="-v --progress --no-checkout " />
+	            </args>
+	        </git>
+	        <git command = "fetch" dir = "@{dest}" />
+	    </sequential>
+	</macrodef>
+	
+	<target name="checkoutFromGit">
+	    <echo>Issuing git pull from directory: ${git.dir}</echo>
+	    <echo>Pulling from branch: ${git.branch}</echo>
+	    <!-- <git-clone-fetch /> -->
+		<sf:deploy 
+			username="${zzdev.username}" 
+			password="${zzdev.password}" 
+			serverurl="${zzdev.serverurl}"
+		  	pollWaitMillis="20000"
+	        maxPoll="5000"
+	        checkOnly="false"
+	        runAllTests="false"  
+			
+			zipFile="C:\GitBitBucket\zzDEV_GitPull\zzDEV_GitPull.zipx"
+		/>
+	</target>
+	
+
+	<target name="• Deploy to zzSVDEV •">
+        <sf:deploy
+                     username="${zzdev.username}"
+                     password="${zzdev.password}"
+                     serverurl="${zzdev.serverurl}"
+                     pollWaitMillis="20000"
+                     maxPoll="5000"
+                     checkOnly="true"                         
+        			 testLevel="RunAllTestsInOrg"
+        			deployRoot="C:\Work\Cases\June\Case 01916169 Opportunity Plan Permissions\Output"
+        /> <!-- zipFile="C:\Temp\Deployment_Slot\src_of_May23Dev.zip" -->
+      </target>
+
+<!-- • • • • Starts - May23DEV to SupportUAT • • • • -->
+	
+	<target name="• • • Fetch May23 and Deploy to SupportUAT • • •" depends="♪ FetchMay23Dev ♪,• Deploy To SupportUAT •" />
+	 <target name="♪ FetchMay23Dev ♪">	
+	  	<mkdir dir="SourceCode/May23Dev ${version_May23_To_UAT}"/>
+	 	
+	    <sf:retrieve 
+			 username="${dev.username}"
+			 password="${dev.password}"
+			 serverurl="${dev.serverurl}"
+			 pollWaitMillis="10000"
+			 maxPoll="5000"
+			 unpackaged="PackageXMLs/package-${version_May23_To_UAT}.xml"
+			 retrieveTarget="SourceCode/May23Dev ${version_May23_To_UAT}" />
+	</target>
+	<target name="• Profile Massging •">
+	      
+		<replaceregexp match="&lt;userPermissions&gt;.*?&lt;/userPermissions&gt;" replace=" " flags="g" byline="false">
+		    <fileset dir="SourceCode/May23Dev ${version_May23_To_UAT}/profiles/" includes="*.profile"/>
+		</replaceregexp>
+	</target>	
+	<target name="• Deploy To SupportUAT •">
+	        <sf:deploy
+	                     username="${uat.username}"
+	                     password="${uat.password}"
+	                     serverurl="${uat.serverurl}"
+	                     pollWaitMillis="20000"
+	                     maxPoll="5000"
+	                     checkOnly="false"
+	                     runAllTests="true"
+	        			 deployRoot="SourceCode/May23Dev ${version_May23_To_UAT}"	        	         
+	        />
+	</target>
+<!-- • • • • Ends - May23DEV to SupportUAT • • • • -->
+	
+	
+	<!-- • • • • Starts - zzSVDev to SupportUAT • • • • -->
+		
+		<target name="• • • Fetch zzSVDev and Deploy to SupportUAT • • •" depends="♪ Fetch-zzSVDev ♪,• Deploy Profiles To SupportUAT •" />
+		 <target name="♪ Fetch-zzSVDev ♪">	
+		  	<mkdir dir="SourceCode/zzSVDev ${version_zzSVDev_To_UAT}"/>		 	
+		    <sf:retrieve 
+				 username="${dev.username}"
+				 password="${dev.password}"
+				 serverurl="${dev.serverurl}"
+				 pollWaitMillis="10000"
+				 maxPoll="5000"
+				 unpackaged="PackageXMLs/package-${version_zzSVDev_To_UAT}.xml"
+				 retrieveTarget="SourceCode/zzSVDev ${version_zzSVDev_To_UAT}" />
+		</target>
+		<target name="• Deploy Profiles To SupportUAT •">
+		        <sf:deploy
+		                     username="${uat.username}"
+		                     password="${uat.password}"
+		                     serverurl="${uat.serverurl}"
+		                     pollWaitMillis="20000"
+		                     maxPoll="5000"
+		                     checkOnly="false"
+		                     runAllTests="true"
+		        			 deployRoot="SourceCode/May23Dev ${version_zzSVDev_To_UAT}"	        	         
+		        />
+		</target>
+	<!-- • • • • Ends - May23DEV to SupportUAT • • • • -->
+	
+</project>
